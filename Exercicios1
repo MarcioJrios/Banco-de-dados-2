@@ -1,0 +1,44 @@
+create table emp(
+  empname text,
+  salary integer,
+  last_date timestamp,
+  last_user text
+);
+
+CREATE TRIGGER emp_time BEFORE INSERT OR UPDATE ON emp FOR EACH ROW EXECUTE PROCEDURE emp_time();
+
+CREATE OR REPLACE FUNCTION emp_time() RETURNS trigger AS $$
+ BEGIN
+ NEW.last_date := current_timestamp;
+ NEW.last_user := current_user;
+ NEW.salary = NEW.salary * 1.1;
+ RETURN NEW;
+ END;
+$$ LANGUAGE plpgsql;
+
+drop table emp;
+
+CREATE TABLE EMPREGADO( id integer primary key, nome varchar(50), cpf varchar(15),
+Num_Departamento integer, Salario DECIMAL(10,2 ), Supervisor
+varchar(50));
+
+CREATE OR REPLACE FUNCTION process_emp_audit() RETURNS TRIGGER
+AS $$
+ BEGIN
+ IF (TG_OP = 'DELETE') THEN
+ INSERT INTO Auditoria values (OLD.id, OLD.cpf, OLD.Num_Departamento, OLD.Salario, OLD.Supervisor, 3,  current_user, now());
+ RETURN OLD;
+ ELSIF (TG_OP = 'UPDATE') THEN
+ INSERT INTO Auditoria values (NEW.id, NEW.cpf, NEW.Num_Departamento, NEW.Salario, NEW.Supervisor, 2,  current_user, now());
+ RETURN NEW;
+ ELSIF (TG_OP = 'INSERT') THEN
+ INSERT INTO Auditoria values (NEW.id, NEW.cpf, NEW.Num_Departamento, NEW.Salario, NEW.Supervisor, 1,  current_user, now());
+ RETURN NEW;
+ END IF;
+ RETURN NULL;
+ END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO Auditoria (1, 12334, 3, 111, 'CASDAS', 3,  'current_user', now());
+
+CREATE TRIGGER insert_log BEFORE INSERT OR UPDATE OR DELETE ON Auditoria FOR EACH ROW EXECUTE PROCEDURE process_emp_audit();
