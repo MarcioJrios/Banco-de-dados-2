@@ -1,0 +1,29 @@
+create table PageRevision(name varchar, dataA date, author varchar , texto text);
+
+create table PageAudit(nameA varchar, dataAt date, dif_len int);
+
+CREATE OR REPLACE FUNCTION audit() RETURNS trigger AS $$
+ BEGIN
+ if(TG_OP = 'DELETE') THEN
+    OLD.dataA := current_timestamp;
+    OLD.author := current_user;
+    insert into PageAudit values(OLD.name, current_timestamp, length(OLD.text));
+    RETURN OLD;
+ elsif(TG_OP = 'UPDATE') THEN
+    NEW.dataA := current_timestamp;
+    NEW.author := current_user;
+    insert into PageAudit values(NEW.dataA, current_timestamp, length(NEW.texto));
+    RETURN NEW;
+ elsif(TG_OP = 'INSERT') THEN
+    NEW.dataA := current_timestamp;
+    NEW.author := current_user;
+    insert into PageAudit values(NEW.dataA, current_timestamp, length(NEW.texto));
+    RETURN NEW;
+ END IF;
+    RETURN NULL;
+ END;
+$$ LANGUAGE plpgsql;
+
+CREATE trigger auditoria before insert or update OR DELETE on PageRevision FOR EACH ROW execute procedure audit();
+
+insert into PageRevision(name, texto) values('marcio', 'skals nsgf');
