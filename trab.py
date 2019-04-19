@@ -12,3 +12,14 @@ with open('teste.txt', newline='') as inputfile:
 
 arquivo.reverse()
 print(arquivo)
+print(len(arquivo))
+
+for item in arquivo:
+	instrucao = item
+	instrucao.replace("<","")
+	instrucao.replace(">","")
+	if 'commit' in instrucao:
+		lista1 = list(instrucao.split('', 1))
+		Redo.append(lista1[0][1])
+	else
+		#aqui vão os casos das outras instruções
