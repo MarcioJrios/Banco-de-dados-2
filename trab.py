@@ -25,12 +25,20 @@ for item in arquivo:
 	else
 		#aqui vão os casos das outras instruções
 		if 'start' in instrucao:
-			lista2 = list(instrucao.split('', 1))
+			lista1 = list(instrucao.split('', 1))
 			if lista2[0][1] not in Redo:
-				Undo.append(lista2[0][1])
+				Undo.append(lista1[0][1])
 			else 
 				if 'Start' in instrucao:
 					#por enquanto o checkpoint não faz diferença
 					pass
 				else
 					#a ultima instrução que faltou foi a opereção
+					lista1 = list(instrucao.split(',', 4))
+					if lista1[0][0] not in Redo:
+						if lista1[0][0] in Redo:
+							pass
+						else
+							Undo.append(lista1[0][0])
+					else
+						pass
