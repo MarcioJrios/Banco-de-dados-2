@@ -14,7 +14,7 @@ res_list = [item for list2 in arquivo for item in list2]
 i=0
 for item in res_list:
 	instrucao = item
-	#remove os sinais de maior e menos so pra n dar merda
+	#remove os sinais de maior e menor so pra n dar merda
 	instrucao = instrucao.replace("<","")
 	instrucao = instrucao.replace(">","")
 	#aqui ele começa verificando se há commit
