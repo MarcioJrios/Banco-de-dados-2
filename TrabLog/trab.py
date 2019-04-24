@@ -62,7 +62,7 @@ for item in res_list:
 					if instrucao in Undo:
 						variables[res_list[i+1]] = res_list[i+2]
 					else: #redo(checkpoint)
-						variables[res_list[i+1]] = res_list[i+3]
+						variables[res_list[i+1]] = res_list[i+3].replace(">", "")
 				else:
 					pass
 			else:
