@@ -40,6 +40,7 @@ for item in res_list:
 			
 	i=i+1
 
+save = -1
 i = 0
 #o segundo backlog que executa os Undo
 for item in res_list:
@@ -54,9 +55,16 @@ for item in res_list:
 		if 'start' in instrucao:
 			pass
 		else :
-			if 'Start' in instrucao:
-				#por enquanto o checkpoint não faz diferença
-				pass
+			if 'Start' in instrucao: #considera o checkpoint
+				save = i; #salva a posição em que o checkpoint foi encontrado
+				if instrucao[:1] == 'T':
+					#a ultima instrução que faltou foi a opereção
+					if instrucao in Undo:
+						variables[res_list[i+1]] = res_list[i+2]
+					else: #redo(checkpoint)
+						variables[res_list[i+1]] = res_list[i+3]
+				else:
+					pass
 			else:
 				if instrucao[:1] == 'T':
 					#a ultima instrução que faltou foi a opereção
@@ -91,8 +99,11 @@ for item in res_list:
 				if instrucao[:1] == 'T':
 					#a ultima instrução que faltou foi a opereção
 					a = res_list[i]
-					if instrucao in Redo:
-						variables[res_list[i+1]] = res_list[i+3].replace(">", "")
+					if i > save:
+						if instrucao in Redo:
+							variables[res_list[i+1]] = res_list[i+3].replace(">", "")
+						else:
+							pass
 					else:
 						pass
 				else:
