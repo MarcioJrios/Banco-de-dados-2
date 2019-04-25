@@ -3,7 +3,6 @@ import csv
 Redo = []
 Undo = []
 Check = []
-aux = []
 variables = {'A':0, 'B':0, 'C':0, 'D':0, 'E':0, 'F':0, 'G':0}
 arquivo = []
 with open('teste03.txt', newline='') as inputfile:
@@ -14,6 +13,7 @@ arquivo.reverse()
 res_list = [item for list2 in arquivo for item in list2]
 tam = len(res_list)
 i=0
+#o primeiro backlog que define o que deve ser Undo e Redo
 for item in res_list:
 	instrucao = item
 	#remove os sinais de maior e menor so pra n dar merda
@@ -23,7 +23,6 @@ for item in res_list:
 	if 'commit' in instrucao:
 		lista1 = list(instrucao.split(' ', 2))
 		Redo.append(lista1[1])
-		aux.append(lista1[1])
 	else :
 		#aqui vão os casos das outras instruções
 		if 'start' in instrucao:
@@ -35,7 +34,7 @@ for item in res_list:
 				Undo.append(tr)
 		else:
 			if 'Start' in instrucao:
-				Check = aux
+				Check = Redo
 			else:
 				#a ultima instrução que faltou foi a opereção
 				pass
@@ -63,26 +62,36 @@ for item in res_list:
 			pass
 		else :
 			if 'Start' in instrucao: #considera o checkpoint
-				save = tam-i; #salva a posição em que o checkpoint foi encontrado
-				CKPT = 'true'
+				if CKPT = 'false':
+					save = i; #salva a posição em que o checkpoint foi encontrado
+					CKPT = 'true'
+				else:
+					pass
 			else:
-				if CKPT == 'true':
-					if instrucao[:1] == 'T':
-						if instrucao in Undo:
-							variables[res_list[i+1]] = res_list[i+2]
-						else: #redo(checkpoint)
-							variables[res_list[i+1]] = res_list[i+3].replace(">", "")
+				if instrucao[:1] == 'T':
+					if instrucao in Undo:
+						variables[res_list[i+1]] = res_list[i+2]
 					else:
 						pass
 				else:
-					if instrucao[:1] == 'T':
-						if instrucao in Undo:
-							variables[res_list[i+1]] = res_list[i+2]
-						else:
-							pass
-					else:
-						pass
+					pass
 	i = i+1
+	if CKPT == 'true':
+		while i != save:
+			if res_list[i][:1] == 'T':
+				#a ultima instrução que faltou foi a opereção
+				if instrucao in Redo:
+					variables[res_list[i+1]] = res_list[i+3].replace(">", "")
+				else:
+					pass
+			else:
+				if res_list[i][:1] == 'c':
+					lista1 = list(res_list[i].split(' ', 2))
+					Redo.remove(lista1[1])
+				else:
+					pass
+		i = i-1
+					
 
 i=0
 #agora executa os redo
@@ -95,12 +104,11 @@ for item in res_list:
 	if 'commit' in instrucao:
 		pass
 	else:
-		#aqui vão os casos das outras instruções
 		if 'start' in instrucao:
 			pass
 		else :
 			if 'Start' in instrucao:
-				#por enquanto o checkpoint não faz diferença
+				#o checkpoint não faz diferença
 				pass
 			else:
 				if instrucao[:1] == 'T':
